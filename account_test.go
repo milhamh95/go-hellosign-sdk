@@ -24,7 +24,7 @@ func TestAccount_Get(t *testing.T) {
 	is.NoErr(err)
 
 	errUnknownJSON := testdata.GetGolden(t, "account-1-err-unknown")
-	errUnauthorizedJSON := testdata.GetGolden(t, "err-unauthorized")
+	errUnauthorizedJSON := testdata.GetGolden(t, "err-unauthorized-api-key")
 
 	tests := map[string]struct {
 		accountID       string
@@ -42,7 +42,7 @@ func TestAccount_Get(t *testing.T) {
 			expectedAccount: account,
 			expectedError:   nil,
 		},
-		"unauthorized": {
+		"unauthorized api key": {
 			accountID: "1",
 			accountResponse: http.Response{
 				StatusCode: http.StatusNotFound,
@@ -165,6 +165,8 @@ func TestAccount_Verify(t *testing.T) {
 	accountRespJSON, err := json.Marshal(accountResp)
 	is.NoErr(err)
 
+	errUnauthorizedPaidPlanJSON := testdata.GetGolden(t, "err-unauthorized-paid-plan")
+
 	tests := map[string]struct {
 		email           string
 		accountResponse http.Response
@@ -181,6 +183,16 @@ func TestAccount_Verify(t *testing.T) {
 			expectedAccount: accountResp,
 			expectedError:   nil,
 		},
+		"unauthorized access to paid plan": {
+			email: "rifivazu-0282@gmail.com",
+			accountResponse: http.Response{
+				StatusCode: http.StatusForbidden,
+				Body:       ioutil.NopCloser(bytes.NewReader(errUnauthorizedPaidPlanJSON)),
+				Header:     make(http.Header),
+			},
+			expectedAccount: hellosign.Account{},
+			expectedError:   errors.New("forbidden: A paid API plan is required to access this endpoint"),
+		},
 	}
 
 	for testName, test := range tests {
@@ -192,7 +204,7 @@ func TestAccount_Verify(t *testing.T) {
 
 			apiClient := hellosign.NewAPI("123", mockHTTPClient)
 			resp, err := apiClient.AccountAPI.Verify(test.email)
-			if err != nil {
+			if test.expectedError != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
 			}

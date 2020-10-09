@@ -140,6 +140,17 @@ func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 		return Account{}, err
 	}
 
+	if resp.StatusCode >= http.StatusMultipleChoices {
+		e := Error{}
+		err = prepareError(resp, &e)
+		if err != nil {
+			return Account{}, err
+		}
+
+		msg := e.Error.ErrorName + ": " + e.Error.ErrorMessage
+		return Account{}, errors.New(msg)
+	}
+
 	bodyResp, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return Account{}, err
