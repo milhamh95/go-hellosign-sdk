@@ -197,7 +197,7 @@ func TestAccount_Verify(t *testing.T) {
 				return
 			}
 			is.NoErr(err)
-			is.Equal(test.accountResponse, resp)
+			is.Equal(test.expectedAccount, resp)
 		})
 	}
 }

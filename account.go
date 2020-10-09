@@ -1,9 +1,11 @@
 package hellosign
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -99,6 +101,43 @@ func (a *AccountAPI) GetByID(accountID string) (Account, error) {
 
 		msg := e.Error.ErrorName + ": " + e.Error.ErrorMessage
 		return Account{}, errors.New(msg)
+	}
+
+	bodyResp, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Account{}, err
+	}
+
+	accountDetail := Account{}
+	err = json.Unmarshal(bodyResp, &accountDetail)
+	if err != nil {
+		return Account{}, err
+	}
+
+	return accountDetail, nil
+}
+
+func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
+	path := a.client.BaseURL + SubURLAccount + "verify"
+
+	var params bytes.Buffer
+	writer := multipart.NewWriter(&params)
+
+	emailAddressField, err := writer.CreateFormField("email_address")
+	if err != nil {
+		return Account{}, err
+	}
+	emailAddressField.Write([]byte(emailAddress))
+
+	req, err := http.NewRequest(http.MethodPost, path, &params)
+	if err != nil {
+		return Account{}, err
+	}
+	req.SetBasicAuth(a.client.apiKey, "")
+
+	resp, err := a.client.HTTPClient.Do(req)
+	if err != nil {
+		return Account{}, err
 	}
 
 	bodyResp, err := ioutil.ReadAll(resp.Body)
