@@ -1,0 +1,6 @@
+{
+    "error": {
+        "error_msg": "User not found for ID 1",
+        "error_name": "not_found"
+    }
+}
