@@ -39,7 +39,7 @@ type AccountQuotas struct {
 
 const (
 	// SubURLAccount is sub url path for account
-	SubURLAccount = "/account/"
+	SubURLAccount = "/account"
 )
 
 // Get will return an account and its settings
@@ -83,7 +83,7 @@ func (a *AccountAPI) Get() (Account, error) {
 
 // GetByID will return account and its setting based on account id
 func (a *AccountAPI) GetByID(accountID string) (Account, error) {
-	req, err := http.NewRequest(http.MethodGet, a.client.BaseURL+SubURLAccount+accountID, nil)
+	req, err := http.NewRequest(http.MethodGet, a.client.BaseURL+SubURLAccount+"/"+accountID, nil)
 	if err != nil {
 		return Account{}, err
 	}
@@ -122,7 +122,7 @@ func (a *AccountAPI) GetByID(accountID string) (Account, error) {
 // Verify will check whether an HelloSign Account exists for the given email address.
 // This method is restricted to paid API users.
 func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
-	path := a.client.BaseURL + SubURLAccount + "verify"
+	path := a.client.BaseURL + SubURLAccount + "/verify"
 
 	var params bytes.Buffer
 	writer := multipart.NewWriter(&params)
@@ -132,6 +132,55 @@ func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 		return Account{}, err
 	}
 	emailAddressField.Write([]byte(emailAddress))
+
+	req, err := http.NewRequest(http.MethodPost, path, &params)
+	if err != nil {
+		return Account{}, err
+	}
+	req.SetBasicAuth(a.client.apiKey, "")
+
+	resp, err := a.client.HTTPClient.Do(req)
+	if err != nil {
+		return Account{}, err
+	}
+
+	if resp.StatusCode >= http.StatusMultipleChoices {
+		e := Error{}
+		err = prepareError(resp, &e)
+		if err != nil {
+			return Account{}, err
+		}
+
+		msg := e.Error.ErrorName + ": " + e.Error.ErrorMessage
+		return Account{}, errors.New(msg)
+	}
+
+	bodyResp, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Account{}, err
+	}
+
+	accountDetail := Account{}
+	err = json.Unmarshal(bodyResp, &accountDetail)
+	if err != nil {
+		return Account{}, err
+	}
+
+	return accountDetail, nil
+}
+
+// Update will update account callback url
+func (a *AccountAPI) Update(callbackURL string) (Account, error) {
+	path := a.client.BaseURL + SubURLAccount
+
+	var params bytes.Buffer
+	writer := multipart.NewWriter(&params)
+
+	callbackURLField, err := writer.CreateFormField("callback_url")
+	if err != nil {
+		return Account{}, err
+	}
+	callbackURLField.Write([]byte(callbackURL))
 
 	req, err := http.NewRequest(http.MethodPost, path, &params)
 	if err != nil {
