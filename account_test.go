@@ -274,39 +274,3 @@ func TestAccount_Update(t *testing.T) {
 		})
 	}
 }
-
-// func TestGet2_Account(t *testing.T) {
-// 	dataResult := []byte(`{"account":{"account_id":"18b7e8510490b4125f97bd3fec40a5b53345873d","email_address":"photon628@gmail.com","is_locked":false,"is_paid_hs":false,"is_paid_hf":false,"quotas":{"templates_left":0,"documents_left":3,"api_signature_requests_left":0},"callback_url":null,"locale":"en-US","role_code":null}}`)
-// 	tests := map[string]struct {
-// 		accountID          string
-// 		accountResponse    map[string]testdata.HTTPCall
-// 		expectedStatusCode int
-// 	}{
-// 		"success": {
-// 			accountID: "1",
-// 			accountResponse: map[string]testdata.HTTPCall{
-// 				"GET /account/1": {
-// 					Header: map[string]string{
-// 						"Content-Type": "application/json",
-// 					},
-// 					Method:       http.MethodDelete,
-// 					Status:       http.StatusOK,
-// 					ExpectedResp: dataResult,
-// 				},
-// 			},
-// 			expectedStatusCode: http.StatusOK,
-// 		},
-// 	}
-
-// 	for testName, test := range tests {
-// 		t.Run(testName, func(t *testing.T) {
-// 			server, serverStop := testdata.StartServer(t, test.accountResponse)
-// 			defer serverStop()
-
-// 			apiClient := hellosign.NewAPI("123", &http.Client{Timeout: 2 * time.Second})
-// 			apiClient.BaseURL = server.URL
-// 			resp, err := apiClient.AccountAPI.Get(test.accountID)
-// 			fmt.Println(resp)
-// 		})
-// 	}
-// }
