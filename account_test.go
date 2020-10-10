@@ -276,26 +276,41 @@ func TestAccount_Update(t *testing.T) {
 }
 
 func TestAccount_Create(t *testing.T) {
+	is := is.New(t)
+	accountJSON := testdata.GetGolden(t, "account-1")
+
+	account := hellosign.Account{}
+	err := json.Unmarshal(accountJSON, &account)
+	is.NoErr(err)
+
 	tests := map[string]struct {
 		emailAddress    string
+		accountResponse http.Response
 		expectedAccount hellosign.Account
+		expectedError   error
 	}{
 		"success": {
 			emailAddress: "rifivazu-0282@gmail.com",
-			expectedAccount: hellosign.Account{
-				Account: hellosign.AccountDetail{
-					EmailAddress: "rifivazu-0282@gmail.com",
-				},
+			accountResponse: http.Response{
+				StatusCode: http.StatusOK,
+				Body:       ioutil.NopCloser(bytes.NewReader(accountJSON)),
+				Header:     make(http.Header),
 			},
+			expectedAccount: account,
+			expectedError:   nil,
 		},
 	}
 
 	for testName, test := range tests {
 		t.Run(testName, func(t *testing.T) {
 			is := is.New(t)
+			mockHTTPClient := testdata.NewClient(t, func(req *http.Request) *http.Response {
+				return &test.accountResponse
+			})
 
-			apiClient := hellosign.NewAPI("123", &http.Client{})
+			apiClient := hellosign.NewAPI("123", mockHTTPClient)
 			res, err := apiClient.AccountAPI.Create(test.emailAddress)
+
 			is.NoErr(err)
 			is.Equal(test.expectedAccount, res)
 		})

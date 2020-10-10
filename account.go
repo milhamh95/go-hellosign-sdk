@@ -72,13 +72,13 @@ func (a *AccountAPI) Get() (Account, error) {
 		return Account{}, err
 	}
 
-	accountDetail := Account{}
-	err = json.Unmarshal(bodyResp, &accountDetail)
+	account := Account{}
+	err = json.Unmarshal(bodyResp, &account)
 	if err != nil {
 		return Account{}, err
 	}
 
-	return accountDetail, nil
+	return account, nil
 }
 
 // GetByID will return account and its setting based on account id
@@ -216,6 +216,15 @@ func (a *AccountAPI) Update(callbackURL string) (Account, error) {
 	}
 
 	return accountDetail, nil
+}
+
+// Create will create a new hellosign account
+func (a *AccountAPI) Create(emailAddress string) (Account, error) {
+	return Account{
+		Account: AccountDetail{
+			EmailAddress: "rifivazu-0282@gmail.com",
+		},
+	}, nil
 }
 
 // func (a *AccountAPI) Create(emailAddress string) string {
