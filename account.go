@@ -220,11 +220,40 @@ func (a *AccountAPI) Update(callbackURL string) (Account, error) {
 
 // Create will create a new hellosign account
 func (a *AccountAPI) Create(emailAddress string) (Account, error) {
-	return Account{
-		Account: AccountDetail{
-			EmailAddress: "rifivazu-0282@gmail.com",
-		},
-	}, nil
+	path := a.client.BaseURL + SubURLAccount + "/create"
+
+	var params bytes.Buffer
+	writer := multipart.NewWriter(&params)
+
+	emailAddressField, err := writer.CreateFormField("email_address")
+	if err != nil {
+		return Account{}, err
+	}
+	emailAddressField.Write([]byte(emailAddress))
+
+	req, err := http.NewRequest(http.MethodPost, path, &params)
+	if err != nil {
+		return Account{}, err
+	}
+	req.SetBasicAuth(a.client.apiKey, "")
+
+	resp, err := a.client.HTTPClient.Do(req)
+	if err != nil {
+		return Account{}, err
+	}
+
+	bodyResp, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return Account{}, err
+	}
+
+	accountDetail := Account{}
+	err = json.Unmarshal(bodyResp, &accountDetail)
+	if err != nil {
+		return Account{}, err
+	}
+
+	return accountDetail, nil
 }
 
 // func (a *AccountAPI) Create(emailAddress string) string {
