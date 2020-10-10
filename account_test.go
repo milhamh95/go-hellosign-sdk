@@ -274,3 +274,30 @@ func TestAccount_Update(t *testing.T) {
 		})
 	}
 }
+
+func TestAccount_Create(t *testing.T) {
+	tests := map[string]struct {
+		emailAddress    string
+		expectedAccount hellosign.Account
+	}{
+		"success": {
+			emailAddress: "rifivazu-0282@gmail.com",
+			expectedAccount: hellosign.Account{
+				Account: hellosign.AccountDetail{
+					EmailAddress: "rifivazu-0282@gmail.com",
+				},
+			},
+		},
+	}
+
+	for testName, test := range tests {
+		t.Run(testName, func(t *testing.T) {
+			is := is.New(t)
+
+			apiClient := hellosign.NewAPI("123", &http.Client{})
+			res, err := apiClient.AccountAPI.Create(test.emailAddress)
+			is.NoErr(err)
+			is.Equal(test.expectedAccount, res)
+		})
+	}
+}
