@@ -10,7 +10,7 @@
             "documents_left":3,
             "api_signature_requests_left":0
         },
-        "callback_url":null,
+        "callback_url":"https://www.example.com/callback",
         "locale":"en-US",
         "role_code":null
     }

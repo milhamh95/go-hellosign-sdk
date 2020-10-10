@@ -167,6 +167,10 @@ func TestAccount_Verify(t *testing.T) {
 
 	errUnauthorizedPaidPlanJSON := testdata.GetGolden(t, "err-unauthorized-paid-plan")
 
+	notVerifiedAccount := hellosign.Account{}
+	notVerifiedAccountJSON, err := json.Marshal(notVerifiedAccount)
+	is.NoErr(err)
+
 	tests := map[string]struct {
 		email           string
 		accountResponse http.Response
@@ -193,6 +197,16 @@ func TestAccount_Verify(t *testing.T) {
 			expectedAccount: hellosign.Account{},
 			expectedError:   errors.New("forbidden: A paid API plan is required to access this endpoint"),
 		},
+		"not verified": {
+			email: "rifivazu-0282@gmail.com",
+			accountResponse: http.Response{
+				StatusCode: http.StatusOK,
+				Body:       ioutil.NopCloser(bytes.NewReader(notVerifiedAccountJSON)),
+				Header:     make(http.Header),
+			},
+			expectedAccount: hellosign.Account{},
+			expectedError:   nil,
+		},
 	}
 
 	for testName, test := range tests {
@@ -208,6 +222,53 @@ func TestAccount_Verify(t *testing.T) {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
 			}
+			is.NoErr(err)
+			is.Equal(test.expectedAccount, resp)
+		})
+	}
+}
+
+func TestAccount_Update(t *testing.T) {
+	is := is.New(t)
+
+	accountJSON := testdata.GetGolden(t, "account-1")
+
+	account := hellosign.Account{}
+	err := json.Unmarshal(accountJSON, &account)
+	is.NoErr(err)
+
+	tests := map[string]struct {
+		callbackURL     string
+		accountResponse http.Response
+		expectedAccount hellosign.Account
+		expectedError   error
+	}{
+		"success": {
+			callbackURL: "rifivazu-0282@gmail.com",
+			accountResponse: http.Response{
+				StatusCode: http.StatusOK,
+				Body:       ioutil.NopCloser(bytes.NewReader(accountJSON)),
+				Header:     make(http.Header),
+			},
+			expectedAccount: account,
+			expectedError:   nil,
+		},
+	}
+
+	for testName, test := range tests {
+		t.Run(testName, func(t *testing.T) {
+			is := is.New(t)
+			mockHTTPClient := testdata.NewClient(t, func(req *http.Request) *http.Response {
+				return &test.accountResponse
+			})
+
+			apiClient := hellosign.NewAPI("123", mockHTTPClient)
+			resp, err := apiClient.AccountAPI.Update(test.callbackURL)
+			if err != nil {
+				is.Equal(test.expectedError.Error(), err.Error())
+				return
+			}
+
 			is.NoErr(err)
 			is.Equal(test.expectedAccount, resp)
 		})

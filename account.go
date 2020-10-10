@@ -14,7 +14,8 @@ type AccountAPI service
 
 // Account represent account response
 type Account struct {
-	Account AccountDetail `json:"account"`
+	Account  AccountDetail `json:"account"`
+	Warnings []Warnings    `json:"warnings"`
 }
 
 // AccountDetail represent detail account response
@@ -37,6 +38,7 @@ type AccountQuotas struct {
 }
 
 const (
+	// SubURLAccount is sub url path for account
 	SubURLAccount = "/account/"
 )
 
@@ -117,6 +119,8 @@ func (a *AccountAPI) GetByID(accountID string) (Account, error) {
 	return accountDetail, nil
 }
 
+// Verify will check whether an HelloSign Account exists for the given email address.
+// This method is restricted to paid API users.
 func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 	path := a.client.BaseURL + SubURLAccount + "verify"
 
