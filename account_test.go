@@ -10,8 +10,8 @@ import (
 
 	"github.com/matryer/is"
 
-	hellosign "go-hellosign-sdk"
-	"go-hellosign-sdk/testdata"
+	hellosign "github.com/milhamhidayat/go-hellosign-sdk"
+	"github.com/milhamhidayat/go-hellosign-sdk/testdata"
 )
 
 func TestAccount_Get(t *testing.T) {

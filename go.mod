@@ -1,4 +1,4 @@
-module go-hellosign-sdk
+module github.com/milhamhidayat/go-hellosign-sdk
 
 go 1.15
 
