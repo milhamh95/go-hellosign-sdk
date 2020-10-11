@@ -51,6 +51,7 @@ func (a *AccountAPI) Get() (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
+	defer resp.Body.Close()
 
 	account := Account{}
 	err = json.NewDecoder(resp.Body).Decode(&account)
@@ -80,6 +81,7 @@ func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
+	defer resp.Body.Close()
 
 	account := Account{}
 	err = json.NewDecoder(resp.Body).Decode(&account)
@@ -106,6 +108,7 @@ func (a *AccountAPI) Update(callbackURL string) (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
+	defer resp.Body.Close()
 
 	account := Account{}
 	err = json.NewDecoder(resp.Body).Decode(&account)
@@ -134,6 +137,7 @@ func (a *AccountAPI) Create(emailAddress string) (Account, error) {
 	if err != nil {
 		return Account{}, err
 	}
+	defer resp.Body.Close()
 
 	account := Account{}
 	err = json.NewDecoder(resp.Body).Decode(&account)

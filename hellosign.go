@@ -42,7 +42,7 @@ func (c *Client) doRequest(path string, method string, params *bytes.Buffer, w *
 		return nil, err
 	}
 
-	if method == http.MethodGet {
+	if method != http.MethodGet && method != http.MethodDelete {
 		req.Header.Set("Content-Type", w.FormDataContentType())
 	}
 	req.SetBasicAuth(c.apiKey, "")
@@ -51,7 +51,6 @@ func (c *Client) doRequest(path string, method string, params *bytes.Buffer, w *
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode >= http.StatusBadRequest {
 		msg, err := prepareError(resp)
