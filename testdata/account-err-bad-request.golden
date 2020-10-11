@@ -1,0 +1,6 @@
+{
+    "error": {
+        "error_msg": "Invalid parameter: email_addres",
+        "error_name": "bad_request"
+    }
+}

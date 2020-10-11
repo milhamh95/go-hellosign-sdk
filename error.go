@@ -2,8 +2,6 @@ package hellosign
 
 import (
 	"encoding/json"
-	"errors"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -20,16 +18,11 @@ type ErrorDetail struct {
 	ErrorName    string `json:"error_name"`
 }
 
-func prepareError(r *http.Response, errResp interface{}) error {
-	errRespJSON, err := ioutil.ReadAll(r.Body)
+func prepareError(r *http.Response) (string, error) {
+	e := Error{}
+	err := json.NewDecoder(r.Body).Decode(&e)
 	if err != nil {
-		return errors.New("read response")
+		return "", err
 	}
-
-	err = json.Unmarshal(errRespJSON, &errResp)
-	if err != nil {
-		return errors.New("unmarshal json")
-	}
-
-	return err
+	return e.Error.ErrorName + ": " + e.Error.ErrorMessage, nil
 }

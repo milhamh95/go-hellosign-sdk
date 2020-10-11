@@ -23,17 +23,15 @@ func TestAccount_Get(t *testing.T) {
 	err := json.Unmarshal(accountJSON, &account)
 	is.NoErr(err)
 
-	errUnknownJSON := testdata.GetGolden(t, "account-1-err-unknown")
+	errUnknownJSON := testdata.GetGolden(t, "err-unknown")
 	errUnauthorizedJSON := testdata.GetGolden(t, "err-unauthorized-api-key")
 
 	tests := map[string]struct {
-		accountID       string
 		accountResponse http.Response
 		expectedAccount hellosign.Account
 		expectedError   error
 	}{
 		"success": {
-			accountID: "1",
 			accountResponse: http.Response{
 				StatusCode: http.StatusOK,
 				Body:       ioutil.NopCloser(bytes.NewReader(accountJSON)),
@@ -43,7 +41,6 @@ func TestAccount_Get(t *testing.T) {
 			expectedError:   nil,
 		},
 		"unauthorized api key": {
-			accountID: "1",
 			accountResponse: http.Response{
 				StatusCode: http.StatusNotFound,
 				Body:       ioutil.NopCloser(bytes.NewReader(errUnauthorizedJSON)),
@@ -53,7 +50,6 @@ func TestAccount_Get(t *testing.T) {
 			expectedError:   errors.New("unauthorized: Unauthorized api key"),
 		},
 		"unknown error": {
-			accountID: "1",
 			accountResponse: http.Response{
 				StatusCode: http.StatusInternalServerError,
 				Body:       ioutil.NopCloser(bytes.NewReader(errUnknownJSON)),
@@ -72,77 +68,7 @@ func TestAccount_Get(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewAPI("123", mockHTTPClient)
-			resp, err := apiClient.AccountAPI.GetByID(test.accountID)
-			if err != nil {
-				is.Equal(test.expectedError.Error(), err.Error())
-				return
-			}
-
-			is.NoErr(err)
-			is.Equal(test.expectedAccount, resp)
-		})
-	}
-}
-
-func TestAccount_GetByID(t *testing.T) {
-	is := is.New(t)
-
-	accountJSON := testdata.GetGolden(t, "account-1")
-
-	account := hellosign.Account{}
-	err := json.Unmarshal(accountJSON, &account)
-	is.NoErr(err)
-
-	errNotFoundJSON := testdata.GetGolden(t, "account-1-err-not-found")
-	errUnknownJSON := testdata.GetGolden(t, "err-unknown")
-
-	tests := map[string]struct {
-		accountID       string
-		accountResponse http.Response
-		expectedAccount hellosign.Account
-		expectedError   error
-	}{
-		"success": {
-			accountID: "1",
-			accountResponse: http.Response{
-				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(bytes.NewReader(accountJSON)),
-				Header:     make(http.Header),
-			},
-			expectedAccount: account,
-			expectedError:   nil,
-		},
-		"not found": {
-			accountID: "1",
-			accountResponse: http.Response{
-				StatusCode: http.StatusNotFound,
-				Body:       ioutil.NopCloser(bytes.NewReader(errNotFoundJSON)),
-				Header:     make(http.Header),
-			},
-			expectedAccount: hellosign.Account{},
-			expectedError:   errors.New("not_found: User not found for ID 1"),
-		},
-		"unknown error": {
-			accountID: "1",
-			accountResponse: http.Response{
-				StatusCode: http.StatusInternalServerError,
-				Body:       ioutil.NopCloser(bytes.NewReader(errUnknownJSON)),
-				Header:     make(http.Header),
-			},
-			expectedAccount: hellosign.Account{},
-			expectedError:   errors.New("unknown: Unknown error"),
-		},
-	}
-
-	for testName, test := range tests {
-		t.Run(testName, func(t *testing.T) {
-			is := is.New(t)
-			mockHTTPClient := testdata.NewClient(t, func(req *http.Request) *http.Response {
-				return &test.accountResponse
-			})
-
-			apiClient := hellosign.NewAPI("123", mockHTTPClient)
-			resp, err := apiClient.AccountAPI.GetByID(test.accountID)
+			resp, err := apiClient.AccountAPI.Get()
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
@@ -283,6 +209,8 @@ func TestAccount_Create(t *testing.T) {
 	err := json.Unmarshal(accountJSON, &account)
 	is.NoErr(err)
 
+	errBadRequestJSON := testdata.GetGolden(t, "account-err-bad-request")
+
 	tests := map[string]struct {
 		emailAddress    string
 		accountResponse http.Response
@@ -299,6 +227,16 @@ func TestAccount_Create(t *testing.T) {
 			expectedAccount: account,
 			expectedError:   nil,
 		},
+		"invalid email address parameter": {
+			emailAddress: "rifivazu-0282@gmail.com",
+			accountResponse: http.Response{
+				StatusCode: http.StatusBadRequest,
+				Body:       ioutil.NopCloser(bytes.NewReader(errBadRequestJSON)),
+				Header:     make(http.Header),
+			},
+			expectedAccount: hellosign.Account{},
+			expectedError:   errors.New("bad_request: Invalid parameter: email_addres"),
+		},
 	}
 
 	for testName, test := range tests {
@@ -310,6 +248,10 @@ func TestAccount_Create(t *testing.T) {
 
 			apiClient := hellosign.NewAPI("123", mockHTTPClient)
 			res, err := apiClient.AccountAPI.Create(test.emailAddress)
+			if test.expectedError != nil {
+				is.Equal(test.expectedError.Error(), err.Error())
+				return
+			}
 
 			is.NoErr(err)
 			is.Equal(test.expectedAccount, res)
