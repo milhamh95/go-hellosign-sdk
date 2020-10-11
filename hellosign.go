@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	BaseURL = "https://api.hellosign.com/v3"
+	baseURL = "https://api.hellosign.com/v3"
 )
 
+// Client is api client for hellosign
 type Client struct {
 	AccountAPI *AccountAPI
 	common     service
@@ -23,14 +24,15 @@ type service struct {
 	client *Client
 }
 
-func NewAPI(apiKey string, httpClient *http.Client) *Client {
+// NewClient return new hellosign api client
+func NewClient(apiKey string, httpClient *http.Client) *Client {
 	c := &Client{}
 	c.common.client = c
 
 	c.AccountAPI = (*AccountAPI)(&c.common)
 	c.apiKey = apiKey
 	c.HTTPClient = httpClient
-	c.BaseURL = BaseURL
+	c.BaseURL = baseURL
 	return c
 }
 
