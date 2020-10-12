@@ -13,11 +13,12 @@ const (
 
 // Client is api client for hellosign
 type Client struct {
-	AccountAPI *AccountAPI
-	common     service
-	apiKey     string
-	HTTPClient *http.Client
-	BaseURL    string
+	common              service
+	apiKey              string
+	HTTPClient          *http.Client
+	BaseURL             string
+	AccountAPI          *AccountAPI
+	SignatureRequestAPI *SignatureRequestAPI
 }
 
 type service struct {
@@ -29,10 +30,11 @@ func NewClient(apiKey string, httpClient *http.Client) *Client {
 	c := &Client{}
 	c.common.client = c
 
-	c.AccountAPI = (*AccountAPI)(&c.common)
 	c.apiKey = apiKey
 	c.HTTPClient = httpClient
 	c.BaseURL = baseURL
+	c.AccountAPI = (*AccountAPI)(&c.common)
+	c.SignatureRequestAPI = (*SignatureRequestAPI)(&c.common)
 	return c
 }
 
