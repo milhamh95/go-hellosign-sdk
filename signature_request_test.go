@@ -71,3 +71,36 @@ func TestSignatureRequest_Get(t *testing.T) {
 		})
 	}
 }
+
+// func TestSignatureRequest_Fetch(t *testing.T) {
+// 	is := is.New(t)
+
+// 	signatureRequestListJSON := testdata.GetGolden(t, "signature-request-list")
+// 	signatureRequestList := hellosign.SignatureRequestList{}
+// 	err := json.Unmarshal(signatureRequestListJSON, &signatureRequestListJSON)
+// 	is.NoErr(err)
+
+// 	tests := map[string]struct {
+// 		param                        hellosign.SignatureRequestListParam
+// 		expectedSignatureRequestList hellosign.SignatureRequestList
+// 	}{
+// 		"success": {
+// 			param: hellosign.SignatureRequestListParam{
+// 				Page:     1,
+// 				PageSize: 2,
+// 			},
+// 			expectedSignatureRequestList: signatureRequestList,
+// 		},
+// 	}
+
+// 	for testName, test := range tests {
+// 		t.Run(testName, func(t *testing.T) {
+// 			is := is.New(t)
+
+// 			apiClient := hellosign.NewClient("123", &http.Client{})
+// 			resp, err := apiClient.SignatureRequestAPI.Fetch(test.param)
+// 			if err != nil
+// 		})
+// 	}
+
+// }

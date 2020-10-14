@@ -14,8 +14,8 @@ const (
 // SignatureRequestAPI is a service to signature request API
 type SignatureRequestAPI service
 
-// SignatureRequestLists is a response for fetch signature requests
-type SignatureRequestLists struct {
+// SignatureRequestList is a response for fetch signature requests
+type SignatureRequestList struct {
 	ListInfo          ListInfo           `json:"list_info"`
 	SignatureRequests []SignatureRequest `json:"signature_requests"`
 }
@@ -26,6 +26,14 @@ type ListInfo struct {
 	NumPages   int `json:"num_pages"`
 	NumResults int `json:"num_results"`
 	PageSize   int `json:"page_size"`
+}
+
+// SignatureRequestListParam is param to fetch signature requests list
+type SignatureRequestListParam struct {
+	AccountID string
+	Page      int
+	PageSize  int
+	Query     string
 }
 
 // SignatureRequest is a response for signature request
