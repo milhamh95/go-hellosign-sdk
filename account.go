@@ -3,7 +3,6 @@ package hellosign
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"mime/multipart"
 	"net/http"
 )
@@ -14,7 +13,7 @@ type AccountAPI service
 // Account represent account response
 type Account struct {
 	Account  AccountDetail `json:"account"`
-	Warnings []Warnings    `json:"warnings"`
+	Warnings []Warnings    `json:"warnings,omitempty"`
 }
 
 // AccountDetail represent detail account response
@@ -44,7 +43,6 @@ const (
 // Get will return an account and its settings
 // based on user api key
 func (a *AccountAPI) Get() (Account, error) {
-	fmt.Println(a.client.BaseURL)
 	resp, err := a.client.doRequest(
 		a.client.BaseURL+SubURLAccount,
 		http.MethodGet,

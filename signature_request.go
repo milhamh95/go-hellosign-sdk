@@ -14,10 +14,24 @@ const (
 // SignatureRequestAPI is a service to signature request API
 type SignatureRequestAPI service
 
+// SignatureRequestLists is a response for fetch signature requests
+type SignatureRequestLists struct {
+	ListInfo          ListInfo           `json:"list_info"`
+	SignatureRequests []SignatureRequest `json:"signature_requests"`
+}
+
+// ListInfo is a information for query parameter response
+type ListInfo struct {
+	Page       int `json:"page"`
+	NumPages   int `json:"num_pages"`
+	NumResults int `json:"num_results"`
+	PageSize   int `json:"page_size"`
+}
+
 // SignatureRequest is a response for signature request
 type SignatureRequest struct {
 	SignatureRequest SignatureRequestDetail `json:"signature_request"`
-	Warnings         []Warnings             `json:"warnings"`
+	Warnings         []Warnings             `json:"warnings,omitempty"`
 }
 
 // SignatureRequestDetail is a detail for signature request
