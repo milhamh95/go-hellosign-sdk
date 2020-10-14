@@ -2,6 +2,7 @@ package hellosign_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -61,7 +62,7 @@ func TestSignatureRequest_Get(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewClient("123", mockHTTPClient)
-			resp, err := apiClient.SignatureRequestAPI.Get(test.signatureRequestID)
+			resp, err := apiClient.SignatureRequestAPI.Get(context.TODO(), test.signatureRequestID)
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return

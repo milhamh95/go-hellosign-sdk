@@ -2,6 +2,7 @@ package hellosign_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -68,7 +69,7 @@ func TestAccount_Get(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewClient("123", mockHTTPClient)
-			resp, err := apiClient.AccountAPI.Get()
+			resp, err := apiClient.AccountAPI.Get(context.TODO())
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
@@ -143,7 +144,7 @@ func TestAccount_Verify(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewClient("123", mockHTTPClient)
-			resp, err := apiClient.AccountAPI.Verify(test.email)
+			resp, err := apiClient.AccountAPI.Verify(context.TODO(), test.email)
 			if test.expectedError != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
@@ -189,7 +190,7 @@ func TestAccount_Update(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewClient("123", mockHTTPClient)
-			resp, err := apiClient.AccountAPI.Update(test.callbackURL)
+			resp, err := apiClient.AccountAPI.Update(context.TODO(), test.callbackURL)
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return
@@ -247,7 +248,7 @@ func TestAccount_Create(t *testing.T) {
 			})
 
 			apiClient := hellosign.NewClient("123", mockHTTPClient)
-			res, err := apiClient.AccountAPI.Create(test.emailAddress)
+			res, err := apiClient.AccountAPI.Create(context.TODO(), test.emailAddress)
 			if test.expectedError != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return

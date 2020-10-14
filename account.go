@@ -2,6 +2,7 @@ package hellosign
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"mime/multipart"
 	"net/http"
@@ -42,12 +43,13 @@ const (
 
 // Get will return an account and its settings
 // based on user api key
-func (a *AccountAPI) Get() (Account, error) {
+func (a *AccountAPI) Get(ctx context.Context) (Account, error) {
 	resp, err := a.client.doRequest(
-		a.client.BaseURL+SubURLAccount,
-		http.MethodGet,
-		&bytes.Buffer{},
-		&multipart.Writer{},
+		requestParam{
+			ctx:    ctx,
+			path:   a.client.BaseURL + SubURLAccount,
+			method: http.MethodGet,
+		},
 	)
 	if err != nil {
 		return Account{}, err
@@ -65,11 +67,11 @@ func (a *AccountAPI) Get() (Account, error) {
 
 // Verify will check whether an HelloSign Account exists for the given email address.
 // This method is restricted to paid API users.
-func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
+func (a *AccountAPI) Verify(ctx context.Context, emailAddress string) (Account, error) {
 	path := a.client.BaseURL + SubURLAccount + "/verify"
 
-	var params bytes.Buffer
-	writer := multipart.NewWriter(&params)
+	var payload bytes.Buffer
+	writer := multipart.NewWriter(&payload)
 
 	emailAddressField, err := writer.CreateFormField("email_address")
 	if err != nil {
@@ -78,7 +80,12 @@ func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 	emailAddressField.Write([]byte(emailAddress))
 	writer.Close()
 
-	resp, err := a.client.doRequest(path, http.MethodPost, &params, writer)
+	resp, err := a.client.doRequest(requestParam{
+		ctx:    ctx,
+		path:   path,
+		method: http.MethodPost,
+		writer: writer,
+	})
 	if err != nil {
 		return Account{}, err
 	}
@@ -94,9 +101,9 @@ func (a *AccountAPI) Verify(emailAddress string) (Account, error) {
 }
 
 // Update will update account callback url
-func (a *AccountAPI) Update(callbackURL string) (Account, error) {
-	var params bytes.Buffer
-	writer := multipart.NewWriter(&params)
+func (a *AccountAPI) Update(ctx context.Context, callbackURL string) (Account, error) {
+	var payload bytes.Buffer
+	writer := multipart.NewWriter(&payload)
 
 	callbackURLField, err := writer.CreateFormField("callback_url")
 	if err != nil {
@@ -106,10 +113,12 @@ func (a *AccountAPI) Update(callbackURL string) (Account, error) {
 	writer.Close()
 
 	resp, err := a.client.doRequest(
-		a.client.BaseURL+SubURLAccount,
-		http.MethodPost,
-		&params,
-		writer,
+		requestParam{
+			ctx:    ctx,
+			path:   a.client.BaseURL + SubURLAccount,
+			method: http.MethodPost,
+			writer: writer,
+		},
 	)
 	if err != nil {
 		return Account{}, err
@@ -126,11 +135,11 @@ func (a *AccountAPI) Update(callbackURL string) (Account, error) {
 }
 
 // Create will create a new hellosign account
-func (a *AccountAPI) Create(emailAddress string) (Account, error) {
+func (a *AccountAPI) Create(ctx context.Context, emailAddress string) (Account, error) {
 	path := a.client.BaseURL + SubURLAccount + "/create"
 
-	var params bytes.Buffer
-	writer := multipart.NewWriter(&params)
+	var payload bytes.Buffer
+	writer := multipart.NewWriter(&payload)
 
 	emailAddressField, err := writer.CreateFormField("email_address")
 	if err != nil {
@@ -139,7 +148,12 @@ func (a *AccountAPI) Create(emailAddress string) (Account, error) {
 	emailAddressField.Write([]byte(emailAddress))
 	writer.Close()
 
-	resp, err := a.client.doRequest(path, http.MethodPost, &params, writer)
+	resp, err := a.client.doRequest(requestParam{
+		ctx:    ctx,
+		path:   path,
+		method: http.MethodPost,
+		writer: writer,
+	})
 	if err != nil {
 		return Account{}, err
 	}

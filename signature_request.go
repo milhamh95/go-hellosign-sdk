@@ -1,9 +1,8 @@
 package hellosign
 
 import (
-	"bytes"
+	"context"
 	"encoding/json"
-	"mime/multipart"
 	"net/http"
 )
 
@@ -105,13 +104,14 @@ type SignatureDetail struct {
 }
 
 // Get will return a signature request by signature request id
-func (s *SignatureRequestAPI) Get(id string) (SignatureRequest, error) {
+func (s *SignatureRequestAPI) Get(ctx context.Context, id string) (SignatureRequest, error) {
 	path := s.client.BaseURL + subURLSignatureRequest + "/" + id
 	resp, err := s.client.doRequest(
-		path,
-		http.MethodGet,
-		&bytes.Buffer{},
-		&multipart.Writer{},
+		requestParam{
+			ctx:    ctx,
+			path:   path,
+			method: http.MethodGet,
+		},
 	)
 	if err != nil {
 		return SignatureRequest{}, err

@@ -1,8 +1,9 @@
 package hellosign
 
 import (
-	"bytes"
+	"context"
 	"errors"
+	"io"
 	"mime/multipart"
 	"net/http"
 )
@@ -25,6 +26,14 @@ type service struct {
 	client *Client
 }
 
+type requestParam struct {
+	ctx    context.Context
+	path   string
+	method string
+	body   io.Reader
+	writer *multipart.Writer
+}
+
 // NewClient return new hellosign api client
 func NewClient(apiKey string, httpClient *http.Client) *Client {
 	c := &Client{}
@@ -38,14 +47,14 @@ func NewClient(apiKey string, httpClient *http.Client) *Client {
 	return c
 }
 
-func (c *Client) doRequest(path string, method string, params *bytes.Buffer, w *multipart.Writer) (*http.Response, error) {
-	req, err := http.NewRequest(method, path, params)
+func (c *Client) doRequest(r requestParam) (*http.Response, error) {
+	req, err := http.NewRequest(r.method, r.path, r.body)
 	if err != nil {
 		return nil, err
 	}
 
-	if method != http.MethodGet && method != http.MethodDelete {
-		req.Header.Set("Content-Type", w.FormDataContentType())
+	if r.method != http.MethodGet && r.method != http.MethodDelete {
+		req.Header.Set("Content-Type", r.writer.FormDataContentType())
 	}
 	req.SetBasicAuth(c.apiKey, "")
 
