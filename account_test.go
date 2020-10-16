@@ -68,7 +68,8 @@ func TestAccount_Get(t *testing.T) {
 				return &test.accountResponse
 			})
 
-			apiClient := hellosign.NewClient("123", mockHTTPClient)
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
 			resp, err := apiClient.AccountAPI.Get(context.TODO())
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
@@ -143,7 +144,8 @@ func TestAccount_Verify(t *testing.T) {
 				return &test.accountResponse
 			})
 
-			apiClient := hellosign.NewClient("123", mockHTTPClient)
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
 			resp, err := apiClient.AccountAPI.Verify(context.TODO(), test.email)
 			if test.expectedError != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
@@ -189,7 +191,8 @@ func TestAccount_Update(t *testing.T) {
 				return &test.accountResponse
 			})
 
-			apiClient := hellosign.NewClient("123", mockHTTPClient)
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
 			resp, err := apiClient.AccountAPI.Update(context.TODO(), test.callbackURL)
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
@@ -247,7 +250,8 @@ func TestAccount_Create(t *testing.T) {
 				return &test.accountResponse
 			})
 
-			apiClient := hellosign.NewClient("123", mockHTTPClient)
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
 			res, err := apiClient.AccountAPI.Create(context.TODO(), test.emailAddress)
 			if test.expectedError != nil {
 				is.Equal(test.expectedError.Error(), err.Error())

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -106,9 +107,9 @@ type SignatureDetail struct {
 // Get will return a signature request by signature request id
 func (s *SignatureRequestAPI) Get(ctx context.Context, id string) (SignatureRequest, error) {
 	path := s.client.BaseURL + subURLSignatureRequest + "/" + id
-	resp, err := s.client.doRequest(
+	resp, err := s.client.callAPI(
+		ctx,
 		requestParam{
-			ctx:    ctx,
 			path:   path,
 			method: http.MethodGet,
 		},
@@ -125,4 +126,39 @@ func (s *SignatureRequestAPI) Get(ctx context.Context, id string) (SignatureRequ
 	}
 
 	return signatureRequest, nil
+}
+
+// Fetch will return signture request list based on param
+func (s *SignatureRequestAPI) Fetch(ctx context.Context, p SignatureRequestListParam) (SignatureRequestList, error) {
+	path := s.client.BaseURL + subURLSignatureRequest
+	req, err := s.client.prepareRequest(
+		ctx,
+		requestParam{
+			path:   path,
+			method: http.MethodGet,
+		})
+	if err != nil {
+		return SignatureRequestList{}, err
+	}
+
+	q := req.URL.Query()
+	q.Add("account_id", p.AccountID)
+	q.Add("page", strconv.Itoa(p.Page))
+	q.Add("page_size", strconv.Itoa(p.PageSize))
+	q.Add("query", p.Query)
+
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := s.client.executeRequest(req)
+	if err != nil {
+		return SignatureRequestList{}, err
+	}
+
+	signatureRequestList := SignatureRequestList{}
+	err = json.NewDecoder(resp.Body).Decode(&signatureRequestList)
+	if err != nil {
+		return SignatureRequestList{}, err
+	}
+
+	return signatureRequestList, nil
 }

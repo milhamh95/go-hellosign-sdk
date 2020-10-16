@@ -61,7 +61,8 @@ func TestSignatureRequest_Get(t *testing.T) {
 				return &test.signatureResponse
 			})
 
-			apiClient := hellosign.NewClient("123", mockHTTPClient)
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
 			resp, err := apiClient.SignatureRequestAPI.Get(context.TODO(), test.signatureRequestID)
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
@@ -73,35 +74,52 @@ func TestSignatureRequest_Get(t *testing.T) {
 	}
 }
 
-// func TestSignatureRequest_Fetch(t *testing.T) {
-// 	is := is.New(t)
+func TestSignatureRequest_Fetch(t *testing.T) {
+	is := is.New(t)
 
-// 	signatureRequestListJSON := testdata.GetGolden(t, "signature-request-list")
-// 	signatureRequestList := hellosign.SignatureRequestList{}
-// 	err := json.Unmarshal(signatureRequestListJSON, &signatureRequestListJSON)
-// 	is.NoErr(err)
+	signatureRequestListJSON := testdata.GetGolden(t, "signature-request-list")
+	signatureRequestList := hellosign.SignatureRequestList{}
+	err := json.Unmarshal(signatureRequestListJSON, &signatureRequestList)
+	is.NoErr(err)
 
-// 	tests := map[string]struct {
-// 		param                        hellosign.SignatureRequestListParam
-// 		expectedSignatureRequestList hellosign.SignatureRequestList
-// 	}{
-// 		"success": {
-// 			param: hellosign.SignatureRequestListParam{
-// 				Page:     1,
-// 				PageSize: 2,
-// 			},
-// 			expectedSignatureRequestList: signatureRequestList,
-// 		},
-// 	}
+	tests := map[string]struct {
+		param                        hellosign.SignatureRequestListParam
+		signatureResponse            http.Response
+		expectedSignatureRequestList hellosign.SignatureRequestList
+		expectedError                error
+	}{
+		"success": {
+			param: hellosign.SignatureRequestListParam{
+				Page:     1,
+				PageSize: 2,
+			},
+			signatureResponse: http.Response{
+				StatusCode: http.StatusOK,
+				Body:       ioutil.NopCloser(bytes.NewReader(signatureRequestListJSON)),
+				Header:     make(http.Header),
+			},
+			expectedSignatureRequestList: signatureRequestList,
+			expectedError:                nil,
+		},
+	}
 
-// 	for testName, test := range tests {
-// 		t.Run(testName, func(t *testing.T) {
-// 			is := is.New(t)
+	for testName, test := range tests {
+		t.Run(testName, func(t *testing.T) {
+			is := is.New(t)
 
-// 			apiClient := hellosign.NewClient("123", &http.Client{})
-// 			resp, err := apiClient.SignatureRequestAPI.Fetch(test.param)
-// 			if err != nil
-// 		})
-// 	}
+			mockHTTPClient := testdata.NewClient(t, func(req *http.Request) *http.Response {
+				return &test.signatureResponse
+			})
 
-// }
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
+			resp, err := apiClient.SignatureRequestAPI.Fetch(context.TODO(), test.param)
+			if err != nil {
+				is.Equal(test.expectedError.Error(), err.Error())
+				return
+			}
+			is.NoErr(err)
+			is.Equal(test.expectedSignatureRequestList, resp)
+		})
+	}
+}

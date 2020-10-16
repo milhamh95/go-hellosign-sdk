@@ -44,9 +44,9 @@ const (
 // Get will return an account and its settings
 // based on user api key
 func (a *AccountAPI) Get(ctx context.Context) (Account, error) {
-	resp, err := a.client.doRequest(
+	resp, err := a.client.callAPI(
+		ctx,
 		requestParam{
-			ctx:    ctx,
 			path:   a.client.BaseURL + SubURLAccount,
 			method: http.MethodGet,
 		},
@@ -80,12 +80,13 @@ func (a *AccountAPI) Verify(ctx context.Context, emailAddress string) (Account, 
 	emailAddressField.Write([]byte(emailAddress))
 	writer.Close()
 
-	resp, err := a.client.doRequest(requestParam{
-		ctx:    ctx,
-		path:   path,
-		method: http.MethodPost,
-		writer: writer,
-	})
+	resp, err := a.client.callAPI(
+		ctx,
+		requestParam{
+			path:   path,
+			method: http.MethodPost,
+			writer: writer,
+		})
 	if err != nil {
 		return Account{}, err
 	}
@@ -112,9 +113,9 @@ func (a *AccountAPI) Update(ctx context.Context, callbackURL string) (Account, e
 	callbackURLField.Write([]byte(callbackURL))
 	writer.Close()
 
-	resp, err := a.client.doRequest(
+	resp, err := a.client.callAPI(
+		ctx,
 		requestParam{
-			ctx:    ctx,
 			path:   a.client.BaseURL + SubURLAccount,
 			method: http.MethodPost,
 			writer: writer,
@@ -148,12 +149,13 @@ func (a *AccountAPI) Create(ctx context.Context, emailAddress string) (Account, 
 	emailAddressField.Write([]byte(emailAddress))
 	writer.Close()
 
-	resp, err := a.client.doRequest(requestParam{
-		ctx:    ctx,
-		path:   path,
-		method: http.MethodPost,
-		writer: writer,
-	})
+	resp, err := a.client.callAPI(
+		ctx,
+		requestParam{
+			path:   path,
+			method: http.MethodPost,
+			writer: writer,
+		})
 	if err != nil {
 		return Account{}, err
 	}
