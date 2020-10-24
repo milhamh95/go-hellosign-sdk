@@ -90,8 +90,10 @@ func TestSignatureRequest_Fetch(t *testing.T) {
 	}{
 		"success": {
 			param: hellosign.SignatureRequestListParam{
-				Page:     1,
-				PageSize: 2,
+				ListInfoQueryParam: hellosign.ListInfoQueryParam{
+					Page:     1,
+					PageSize: 2,
+				},
 			},
 			signatureResponse: http.Response{
 				StatusCode: http.StatusOK,

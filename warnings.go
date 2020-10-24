@@ -4,5 +4,5 @@ package hellosign
 // https://app.hellosign.com/api/reference#get_account
 type Warnings struct {
 	WarningMessage string `json:"warning_msg"`
-	WarningName    string `json:"unconfimred"`
+	WarningName    string `json:"warning_name"`
 }
