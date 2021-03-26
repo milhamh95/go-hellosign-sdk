@@ -161,42 +161,6 @@ type FormFieldDetail struct {
 	Signer   int    `json:"signer"`
 }
 
-const (
-	// FieldText is text field type
-	FieldText = "text"
-	// FieldCheckBox is check box field type
-	FieldCheckBox = "checkbox"
-	// FieldDateSigned is date signed field type
-	FieldDateSigned = "date_signed"
-	// FieldDropdown is dropdown field type
-	FieldDropdown = "dropdown"
-	// FieldInitials is initals field type
-	FieldInitials = "initials"
-	// FieldRadio is radio field type
-	FieldRadio = "radio"
-	// FieldSignature is signature field type
-	FieldSignature = "signature"
-	// FieldTextMerge is text merge field type
-	FieldTextMerge = "text-merge"
-	// FieldCheckboxMerge is check box mrege field type
-	FieldCheckboxMerge = "checkbox-merge"
-)
-
-const (
-	// DateFormat1 is date format for MM / DD / YYYY ex: 10 / 16 / 2020
-	DateFormat1 = "MM / DD/ YYYY"
-	// DateFormat2 is date format for MM - DD - YYYY ex: 10 - 16 - 2020
-	DateFormat2 = "MM - DD - YYYY"
-	// DateFormat3 is date format for DD / MM / YYYY ex: 16 / 10 / 2020
-	DateFormat3 = "DD / MM / YYYY"
-	// DateFormat4 is date format for DD - MM - YYYY ex: 16 - 10 - 2020
-	DateFormat4 = "DD - MM - YYYY"
-	// DateFormat5 is date format for YYYY / MM / DD ex: 2020 / 10 / 16
-	DateFormat5 = "YYYY / MM / DD"
-	// DateFormat6 is date format for YYYY - MM - DD ex: 2020 - 10 - 16
-	DateFormat6 = "YYYY - MM - DD"
-)
-
 // Get will return a signature request by signature request id
 func (s *SignatureRequestAPI) Get(ctx context.Context, id string) (SignatureRequest, error) {
 	path := s.client.BaseURL + subURLSignatureRequest + "/" + id
