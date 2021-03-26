@@ -1,0 +1,12 @@
+- description: inc
+  input:
+    x: 0
+
+  patch:
+    id: '123'
+    ifRevisionID: '666'
+    inc:
+      x: 1
+
+  expected_output:
+    x: 1

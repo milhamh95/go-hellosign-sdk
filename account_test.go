@@ -5,11 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
 	"github.com/matryer/is"
+	"github.com/stretchr/testify/require"
 
 	hellosign "github.com/milhamhidayat/go-hellosign-sdk"
 	"github.com/milhamhidayat/go-hellosign-sdk/testdata"
@@ -78,6 +80,123 @@ func TestAccount_Get(t *testing.T) {
 
 			is.NoErr(err)
 			is.Equal(test.expectedAccount, resp)
+		})
+	}
+}
+
+type TestFile []TestCase
+
+// type Input struct {
+// 	X string `yaml:"x" json:"x"`
+// }
+
+// type Inc struct {
+// 	X int `yaml:"x" json:"x"`
+// }
+
+// type Patch struct {
+// 	ID           string `yaml:"id" json:"id"`
+// 	IfRevisionID string `yaml:"ifRevisionID" json:"ifRevisionID"`
+// 	Inc          Inc    `yaml:"inc" json:"inc"`
+// }
+
+// type Output struct {
+// 	X int `yaml:"x" json:"x"`
+// }
+
+type TestCase struct {
+	Description     string            `yaml:"description" json:"testName"`
+	GetAccountResp  HTTPResponse      `json:"getAccountResponse"`
+	ExpectedAccount hellosign.Account `yaml:"input" json:"expectedAccount"`
+	ExpectedError   error             `yaml:"expectedOutput" json:"expectedError"`
+}
+
+type HTTPResponse struct {
+	StatusCode int    `json:"statusCode"`
+	Body       string `json:"body"`
+}
+
+// func testPatchperformFromFile(t *testing.T, file string) {
+// 	yamlInput := testdata.GetYAML(t, "some_test")
+
+// 	testFile := TestFile{}
+// 	err := yaml.Unmarshal(yamlInput, &testFile)
+// 	require.NoError(t, err)
+
+// 	for _, testCase := range testFile {
+// 		t.Run(file+"/"+testCase.Description, func(t *testing.T) {
+// 			fmt.Println("========  ========")
+// 			fmt.Printf("%+v\n", testCase.Input)
+// 			fmt.Printf("%+v\n", reflect.TypeOf(testCase.Input))
+// 			fmt.Println("=================")
+// 		})
+// 	}
+// }
+
+// func testPatchperformFromFile1(t *testing.T, file string) {
+// 	yamlInput := testdata.GetJSON(t, "some_test")
+
+// 	testFile := TestFile{}
+// 	err := yaml.Unmarshal(yamlInput, &testFile)
+// 	require.NoError(t, err)
+
+// 	for _, testCase := range testFile {
+// 		t.Run(file+"/"+testCase.Description, func(t *testing.T) {
+// 			fmt.Println("========  ========")
+// 			fmt.Printf("%+v\n", testCase.Input)
+// 			fmt.Printf("%+v\n", reflect.TypeOf(testCase.Input))
+// 			fmt.Println("=================")
+// 		})
+// 	}
+// }
+
+// func TestPatchPerform(t *testing.T) {
+// 	testPatchperformFromFile(t, "some_test")
+// }
+
+// func TestAccount_Getyaml(t *testing.T) {
+// 	getAccountCaseYAML := testdata.GetYAML(t, "get_account_success")
+
+// 	testCase := TestCase{}
+// 	err := yaml.Unmarshal(getAccountCaseYAML, &testCase)
+// 	require.NoError(t, err)
+
+// 	fmt.Println("========  ========")
+// 	fmt.Printf("%+v\n", testCase)
+// 	fmt.Println("=================")
+// }
+
+func TestAccount_GetData(t *testing.T) {
+	testFileBytes := testdata.GetJSON(t, "get_account_success")
+
+	testFile := TestFile{}
+	err := json.Unmarshal(testFileBytes, &testFile)
+	require.NoError(t, err)
+
+	for _, tc := range testFile {
+		t.Run(tc.Description, func(t *testing.T) {
+			mockHTTPClient := testdata.NewClient(t, func(req *http.Request) *http.Response {
+				getAccountBytes := []byte(tc.GetAccountResp.Body)
+
+				return &http.Response{
+					StatusCode: tc.GetAccountResp.StatusCode,
+					Body:       ioutil.NopCloser(bytes.NewReader(getAccountBytes)),
+				}
+			})
+
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = mockHTTPClient
+			resp, err := apiClient.AccountAPI.Get(context.TODO())
+			if err != nil {
+				fmt.Println("========  ========")
+				fmt.Printf("%+v\n", err)
+				fmt.Println("=================")
+				// require.EqualError(t, err, tc.ExpectedError.Error())
+				return
+			}
+
+			require.NoError(t, err)
+			require.Equal(t, tc.ExpectedAccount, resp)
 		})
 	}
 }

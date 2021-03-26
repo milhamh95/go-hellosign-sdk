@@ -39,6 +39,28 @@ func GetGolden(t *testing.T, filename string) []byte {
 	return b
 }
 
+func GetYAML(t *testing.T, filename string) []byte {
+	t.Helper()
+
+	b, err := ioutil.ReadFile(path(filename + ".yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return b
+}
+
+func GetJSON(t *testing.T, filename string) []byte {
+	t.Helper()
+
+	b, err := ioutil.ReadFile(path(filename + ".json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return b
+}
+
 // HTTPCall form of request message which includes expected response
 type HTTPCall struct {
 	Header       map[string]string
@@ -52,8 +74,6 @@ func StartServer(t *testing.T, reqs map[string]HTTPCall) (*httptest.Server, func
 	t.Helper()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
 		// Check the method and the request URI. Eg: GET /some-path?query-param=query-value
 		req, ok := reqs[fmt.Sprintf("%s %s", r.Method, r.RequestURI)]
 		if !ok {

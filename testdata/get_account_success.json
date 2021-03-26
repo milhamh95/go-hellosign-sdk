@@ -1,0 +1,27 @@
+[
+  {
+    "testName": "success",
+    "getAccountResponse": {
+      "statusCode": 200,
+      "body": "{\"account\":{\"account_id\":\"1\",\"email_address\":\"rifivazu-0282@gmail.com\",\"is_locked\":false,\"is_paid_hs\":false,\"is_paid_hf\":false,\"quotas\":{\"templates_left\":0,\"documents_left\":3,\"api_signature_requests_left\":0},\"callback_url\":\"https:\/\/www.example.com\/callback\",\"locale\":\"en-US\",\"role_code\":null}}"
+    },
+    "expectedAccount": {
+      "account": {
+        "account_id": "1",
+        "email_address": "rifivazu-0282@gmail.com",
+        "is_locked": false,
+        "is_paid_hs": false,
+        "is_paid_hf": false,
+        "quotas": {
+          "templates_left": 0,
+          "documents_left": 3,
+          "api_signature_requests_left": 0
+        },
+        "callback_url": "https://www.example.com/callback",
+        "locale": "en-US",
+        "role_code": null
+      }
+    },
+    "expectedError": null
+  }
+]
