@@ -95,10 +95,6 @@ func TestAccount_Verify(t *testing.T) {
 
 	errUnauthorizedPaidPlanJSON := testdata.GetGolden(t, "err-unauthorized-paid-plan")
 
-	notVerifiedAccount := hellosign.Account{}
-	notVerifiedAccountJSON, err := json.Marshal(notVerifiedAccount)
-	is.NoErr(err)
-
 	tests := map[string]struct {
 		email           string
 		accountResponse http.Response

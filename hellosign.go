@@ -22,6 +22,7 @@ type Client struct {
 	BaseURL             string
 	AccountAPI          *AccountAPI
 	SignatureRequestAPI *SignatureRequestAPI
+	TeamAPI             *TeamAPI
 }
 
 type service struct {
@@ -47,6 +48,7 @@ func NewClient(apiKey string) *Client {
 	c.BaseURL = baseURL
 	c.AccountAPI = (*AccountAPI)(&c.common)
 	c.SignatureRequestAPI = (*SignatureRequestAPI)(&c.common)
+	c.TeamAPI = (*TeamAPI)(&c.common)
 	return c
 }
 

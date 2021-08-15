@@ -1,6 +1,7 @@
 package testdata
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -91,4 +92,18 @@ func NewClient(t *testing.T, fn RoundTripFunc) *http.Client {
 	return &http.Client{
 		Transport: RoundTripFunc(fn),
 	}
+}
+
+func MockHTTPClient(t *testing.T, statusCode int, body []byte, header http.Header) *http.Client {
+	mockResponse := http.Response{
+		StatusCode: statusCode,
+		Body:       ioutil.NopCloser(bytes.NewReader(body)),
+		Header:     header,
+	}
+
+	fn := func(req *http.Request) *http.Response {
+		return &mockResponse
+	}
+
+	return NewClient(t, fn)
 }
