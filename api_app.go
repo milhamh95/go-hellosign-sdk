@@ -1,5 +1,12 @@
 package hellosign
 
+import (
+	"context"
+)
+
+// APIAppApi is a service which contain information about HelloSign API App
+type APIAppAPI service
+
 // APIAppList represent list of api apps response
 type APIAppList struct {
 	APIApps  []APIApp `json:"api_apps"`
@@ -42,4 +49,21 @@ type OauthDetail struct {
 	Secret       string   `json:"secret"`
 	Scopes       []string `json:"scopes"`
 	ChargesUsers bool     `json:"charges_users"`
+}
+
+const (
+	subURLAPIApp = "/api_app"
+)
+
+func (a *APIAppAPI) Get(ctx context.Context, clientID string) {
+	// path := fmt.Sprintf("%s%s/%s", a.client.BaseURL, subURLAPIApp, clientID)
+
+	// resp, err := a.client.callAPI(
+	// 	ctx,
+	// 	requestParam{
+	// 		path: a.client.BaseURL + subURLAPIApp,
+	// 		method: http.MethodGet,
+	// 	}
+	// )
+	return
 }

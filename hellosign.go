@@ -2,10 +2,11 @@ package hellosign
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -64,10 +65,16 @@ func (c *Client) callAPI(ctx context.Context, r requestParam) (*http.Response, e
 }
 
 func (c *Client) prepareRequest(ctx context.Context, r requestParam) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, r.method, r.path, r.body)
+	u, err := url.ParseRequestURI(r.path)
 	if err != nil {
 		return nil, err
 	}
+
+	req, err := http.NewRequestWithContext(ctx, r.method, u.String(), r.body)
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(c.apiKey, "")
 
 	if r.method != http.MethodGet && r.method != http.MethodDelete {
 		req.Header.Set("Content-Type", r.writer.FormDataContentType())
@@ -83,12 +90,14 @@ func (c *Client) executeRequest(req *http.Request) (*http.Response, error) {
 	}
 
 	if resp.StatusCode >= http.StatusBadRequest {
-		msg, err := prepareError(resp)
+		e := ErrorResponse{}
+		err := json.NewDecoder(resp.Body).Decode(&e)
 		if err != nil {
 			return nil, err
 		}
-		return nil, errors.New(msg)
+
+		return nil, &e
 	}
 
-	return resp, err
+	return resp, nil
 }

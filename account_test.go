@@ -48,7 +48,7 @@ func TestAccount_Get(t *testing.T) {
 				Header:     make(http.Header),
 			},
 			expectedAccount: hellosign.Account{},
-			expectedError:   errors.New("unauthorized: Unauthorized api key"),
+			expectedError:   errors.New("unauthorized: Unauthorized api Key"),
 		},
 		"unknown error": {
 			accountResponse: http.Response{
@@ -124,16 +124,6 @@ func TestAccount_Verify(t *testing.T) {
 			},
 			expectedAccount: hellosign.Account{},
 			expectedError:   errors.New("forbidden: A paid API plan is required to access this endpoint"),
-		},
-		"not verified": {
-			email: "rifivazu-0282@gmail.com",
-			accountResponse: http.Response{
-				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(bytes.NewReader(notVerifiedAccountJSON)),
-				Header:     make(http.Header),
-			},
-			expectedAccount: hellosign.Account{},
-			expectedError:   nil,
 		},
 	}
 
