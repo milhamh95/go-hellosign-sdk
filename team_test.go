@@ -181,16 +181,14 @@ func TestTeam_AddMember(t *testing.T) {
 	teamNotFoundJSON := testdata.GetGolden(t, "team-not-found")
 
 	tests := map[string]struct {
-		teamHTTPClient   *http.Client
-		userEmailAddress string
-		expectedTeam     hellosign.Team
-		expectedError    error
+		teamHTTPClient *http.Client
+		expectedTeam   hellosign.Team
+		expectedError  error
 	}{
 		"success": {
-			teamHTTPClient:   testdata.MockHTTPClient(t, http.StatusOK, teamJSON, make(http.Header)),
-			userEmailAddress: "team_member@hellosign.com",
-			expectedTeam:     team,
-			expectedError:    nil,
+			teamHTTPClient: testdata.MockHTTPClient(t, http.StatusOK, teamJSON, make(http.Header)),
+			expectedTeam:   team,
+			expectedError:  nil,
 		},
 		"team not found": {
 			teamHTTPClient: testdata.MockHTTPClient(t, http.StatusNotFound, teamNotFoundJSON, make(http.Header)),
@@ -205,7 +203,50 @@ func TestTeam_AddMember(t *testing.T) {
 
 			apiClient := hellosign.NewClient("123")
 			apiClient.HTTPClient = test.teamHTTPClient
-			resp, err := apiClient.TeamAPI.AddMember(context.TODO(), test.userEmailAddress, "")
+			resp, err := apiClient.TeamAPI.AddMember(context.TODO(), hellosign.TeamAddMemberParam{
+				EmailAddress: "team_member@hellosign.com",
+			})
+			if err != nil {
+				is.Equal(test.expectedError.Error(), err.Error())
+				return
+			}
+
+			is.NoErr(err)
+			is.Equal(test.expectedTeam, resp)
+		})
+	}
+}
+
+func TestTeam_RemoveMember(t *testing.T) {
+	is := is.New(t)
+
+	teamJSON := testdata.GetGolden(t, "team")
+
+	team := hellosign.Team{}
+	err := json.Unmarshal(teamJSON, &team)
+	is.NoErr(err)
+
+	tests := map[string]struct {
+		teamHTTPClient *http.Client
+		expectedTeam   hellosign.Team
+		expectedError  error
+	}{
+		"success": {
+			teamHTTPClient: testdata.MockHTTPClient(t, http.StatusOK, teamJSON, make(http.Header)),
+			expectedTeam:   team,
+			expectedError:  nil,
+		},
+	}
+
+	for testName, test := range tests {
+		t.Run(testName, func(t *testing.T) {
+			is := is.New(t)
+
+			apiClient := hellosign.NewClient("123")
+			apiClient.HTTPClient = test.teamHTTPClient
+			resp, err := apiClient.TeamAPI.RemoveMember(context.TODO(), hellosign.TeamRemoveMemberParam{
+				EmailAddress: "team_member1@hellosign.com",
+			})
 			if err != nil {
 				is.Equal(test.expectedError.Error(), err.Error())
 				return

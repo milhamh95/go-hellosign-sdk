@@ -37,7 +37,7 @@ type AccountQuotas struct {
 }
 
 // CheckWarning check if there are warning message
-func (a Account) CheckWarning() bool {
+func (a Account) CheckWarnings() bool {
 	return len(a.Warnings) > 0
 }
 
