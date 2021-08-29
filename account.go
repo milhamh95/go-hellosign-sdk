@@ -36,12 +36,19 @@ type AccountQuotas struct {
 	TemplatesLeft            int `json:"templates_left"`
 }
 
+// CheckWarning check if there are warning message
+func (a Account) CheckWarning() bool {
+	return len(a.Warnings) > 0
+}
+
 const (
 	// subURLAccount is sub url path for account
 	subURLAccount = "/account"
 
+	// subURLAccountVerify is sub url path for verify account
 	subURLAccountVerify = "/account/verify"
 
+	// subURLAccountCreate is sub url path for create new account
 	subURLAccountCreate = "/account/create"
 
 	// accountFieldEmailAddress is a field for account email address
