@@ -78,7 +78,7 @@ func (c *Client) prepareRequest(ctx context.Context, r requestParam) (*http.Requ
 	}
 	req.SetBasicAuth(c.apiKey, "")
 
-	if r.method != http.MethodGet && r.method != http.MethodDelete {
+	if r.method != http.MethodGet && r.writer != nil {
 		req.Header.Set("Content-Type", r.writer.FormDataContentType())
 	}
 

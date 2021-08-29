@@ -48,7 +48,7 @@ func TestAccount_Get(t *testing.T) {
 				Header:     make(http.Header),
 			},
 			expectedAccount: hellosign.Account{},
-			expectedError:   errors.New("unauthorized: Unauthorized api Key"),
+			expectedError:   errors.New("unauthorized: Unauthorized api key"),
 		},
 		"unknown error": {
 			accountResponse: http.Response{
