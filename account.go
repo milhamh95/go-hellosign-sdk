@@ -36,7 +36,7 @@ type AccountQuotas struct {
 	TemplatesLeft            int `json:"templates_left"`
 }
 
-// CheckWarning check if there are warning message
+// CheckWarning check if there are warning messages
 func (a Account) CheckWarnings() bool {
 	return len(a.Warnings) > 0
 }
@@ -60,8 +60,8 @@ var (
 	subURLAccountCreate = subURLAccount + "/create"
 )
 
-// Get will return an account and its settings
-// based on user api key
+// Get will return an account and its settings based on user api key
+// Ref: https://app.hellosign.com/api/reference#get_account
 func (a *AccountAPI) Get(ctx context.Context) (Account, error) {
 	resp, err := a.client.callAPI(
 		ctx,
@@ -86,6 +86,7 @@ func (a *AccountAPI) Get(ctx context.Context) (Account, error) {
 
 // Verify will check whether an HelloSign Account exists for the given email address.
 // This method is restricted to paid API users.
+// Ref: https://app.hellosign.com/api/reference#verify_account
 func (a *AccountAPI) Verify(ctx context.Context, emailAddress string) (Account, error) {
 	var payload bytes.Buffer
 	writer := multipart.NewWriter(&payload)
@@ -94,6 +95,7 @@ func (a *AccountAPI) Verify(ctx context.Context, emailAddress string) (Account, 
 	if err != nil {
 		return Account{}, err
 	}
+
 	err = writer.Close()
 	if err != nil {
 		return Account{}, err
@@ -121,6 +123,7 @@ func (a *AccountAPI) Verify(ctx context.Context, emailAddress string) (Account, 
 }
 
 // Update will update account callback url
+// Ref: https://app.hellosign.com/api/reference#update_account
 func (a *AccountAPI) Update(ctx context.Context, callbackURL string) (Account, error) {
 	var payload bytes.Buffer
 	writer := multipart.NewWriter(&payload)
@@ -129,6 +132,7 @@ func (a *AccountAPI) Update(ctx context.Context, callbackURL string) (Account, e
 	if err != nil {
 		return Account{}, err
 	}
+
 	err = writer.Close()
 	if err != nil {
 		return Account{}, err
@@ -157,6 +161,7 @@ func (a *AccountAPI) Update(ctx context.Context, callbackURL string) (Account, e
 }
 
 // Create will create a new hellosign account
+// Ref: https://app.hellosign.com/api/reference#create_account
 func (a *AccountAPI) Create(ctx context.Context, emailAddress string) (Account, error) {
 	var payload bytes.Buffer
 	writer := multipart.NewWriter(&payload)
@@ -165,6 +170,7 @@ func (a *AccountAPI) Create(ctx context.Context, emailAddress string) (Account, 
 	if err != nil {
 		return Account{}, err
 	}
+
 	err = writer.Close()
 	if err != nil {
 		return Account{}, err

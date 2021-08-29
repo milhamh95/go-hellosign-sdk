@@ -24,7 +24,7 @@ type TeamDetail struct {
 	InvitedAccounts []Account `json:"invited_accounts"`
 }
 
-// CheckWarning check if there are warning message
+// CheckWarning check if there are warning messages
 func (t Team) CheckWarnings() bool {
 	return len(t.Warnings) > 0
 }
