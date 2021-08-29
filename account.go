@@ -45,17 +45,19 @@ const (
 	// subURLAccount is sub url path for account
 	subURLAccount = "/account"
 
-	// subURLAccountVerify is sub url path for verify account
-	subURLAccountVerify = "/account/verify"
-
-	// subURLAccountCreate is sub url path for create new account
-	subURLAccountCreate = "/account/create"
-
 	// accountFieldEmailAddress is a field for account email address
 	accountFieldEmailAddress = "email_address"
 
 	// accountFieldCallbackURL is a field for callback url
 	accountFieldCallbackURL = "callback_url"
+)
+
+var (
+	// subURLAccountVerify is sub url path for verify account
+	subURLAccountVerify = subURLAccount + "/verify"
+
+	// subURLAccountCreate is sub url path for create new account
+	subURLAccountCreate = subURLAccount + "/create"
 )
 
 // Get will return an account and its settings
